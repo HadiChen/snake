@@ -320,9 +320,8 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  /* background-color: #689F38; */
-  background-image: url('../assets/images/bg.jpg');
   background-size: cover;
+  background-image: url('../assets/images/bg.jpg');
 }
 .main {
   margin: 0 auto;
@@ -464,7 +463,6 @@ export default {
 } */
 .snake-part.egg {
   background-image: url('../assets/images/egg.png');
-  background-size: 100% 100%;
 }
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
