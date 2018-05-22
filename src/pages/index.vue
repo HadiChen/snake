@@ -1,6 +1,9 @@
 <template>
   <div class="wrap" ref="wrap">
     <div class="main">
+      <audio autoplay preload="auto" ref="bgm" loop class="bgm">
+        <source src="../assets/music/bgm.mp3" type="audio/mpeg"/>
+      </audio>
       <div
         class="map"
         :style="{
@@ -48,7 +51,7 @@
               <img class="code-img" src="../assets/images/code.jpg" alt="">
               <p class="desc f14">长按关注作者公众号了解一下</p>
               <p class="desc f14">作者：黄蕴宇</p>
-              <p class="desc f14">广州市工贸技术学院</p>
+              <p class="desc f14">广州市工贸技师学院</p>
               <p class="desc f14">网站维护与开发</p>
               <button type="button" class="reStart" @click="reStart">
                 重新开始
@@ -325,6 +328,15 @@ export default {
     },
     reStart () {
       location.reload()
+    },
+    musicPlay () {
+      this.$refs.bgm.play()
+      document.addEventListener('WeixinJSBridgeReady', () => {
+        this.$refs.bgm.play()
+      }, false)
+      document.addEventListener('touchstart', () => {
+        this.$refs.bgm.play()
+      })
     }
   },
   watch: {
@@ -343,6 +355,7 @@ export default {
     this.setMapData()
   },
   mounted () {
+    this.musicPlay()
     this.init()
     this.startGame()
       .then(() => {
@@ -369,6 +382,17 @@ export default {
   height: 100%;
   position: relative;
   width: 100%;
+  overflow: hidden;
+}
+.bgm {
+  position: absolute;
+  top: 999999px;
+  left: 999999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  font-size: 0;
+  overflow: hidden;
 }
 .pop-ups {
   width: 100%;
