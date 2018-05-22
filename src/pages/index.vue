@@ -46,7 +46,11 @@
               </p>
               <p class="desc">本次得分为：{{ getScoreCount }}</p>
               <img class="code-img" src="../assets/images/code.jpg" alt="">
-              <p class="desc" style="font-size: 14px">长按关注公众号，了解一下</p>    <button type="button" class="reStart" @click="reStart">
+              <p class="desc f14">长按关注作者公众号了解一下</p>
+              <p class="desc f14">作者：黄蕴宇</p>
+              <p class="desc f14">广州市工贸技术学院</p>
+              <p class="desc f14">网站维护与开发</p>
+              <button type="button" class="reStart" @click="reStart">
                 重新开始
               </button>
             </div>
@@ -93,7 +97,7 @@ export default {
       // 蛇的长度
       snakeLen: 3,
       // 速度
-      speed: 200
+      speed: 300
     }
   },
   computed: {
@@ -147,6 +151,31 @@ export default {
         this.mapLists[this.eggX].colList[this.eggY].isEgg = true
       }
     },
+    // 计算前进方向
+    compCoordinate (direction, x, y) {
+      let x1 = x
+      let y1 = y
+      switch (direction) {
+        case 'left':
+          --y1
+          break
+        case 'right':
+          ++y1
+          break
+        case 'up':
+          --x1
+          break
+        case 'down':
+          ++x1
+          break
+        default:
+          return
+      }
+      return {
+        x: x1,
+        y: y1
+      }
+    },
     // 蛇运动
     snakeMove () {
       // 根据上面设置的方向来设置蛇头的位置
@@ -192,15 +221,23 @@ export default {
     },
     setDirection (direction) {
       // 先判断是否需要改变方向,true表示需要,false表示不需要
-      if (!this.changeDir) return
+      if (!this.changeDir && !direction) return
       // 为了合理处理蛇的移动,需要判断蛇头和蛇身
       // 假设蛇向右移动,点方向键左,右键都不需要做出响应
       if (this.direction === 'right' && direction === 'left') return
       if (this.direction === 'left' && direction === 'right') return
       if (this.direction === 'up' && direction === 'down') return
       if (this.direction === 'down' && direction === 'up') return
+      let xy = this.compCoordinate(direction, this.x, this.y)
 
+      if (this.snake.indexOf(`${xy.x}-${xy.y}`) === 1) {
+        return
+      }
       this.direction = direction
+      // 获取方向
+      // this.x = xy.x
+      // this.y = xy.y
+
       this.changeDir = false
       setTimeout(() => {
         this.changeDir = true
@@ -224,26 +261,24 @@ export default {
       // 电脑键盘
       document.onkeydown = (e) => {
         e = e || e.event
-        let direction = ''
         switch (e.keyCode) {
           case 37:
             // 向左
-            direction = 'left'
+            this.setDirection('left')
             break
           case 38:
             // 向上
-            direction = 'up'
+            this.setDirection('up')
             break
           case 39:
             // 向右
-            direction = 'right'
+            this.setDirection('right')
             break
           case 40:
             // 向下
-            direction = 'down'
+            this.setDirection('down')
             break
         }
-        this.setDirection(direction)
       }
       // 手机手势
       var hammer = new Hammer(this.$refs.wrap)
@@ -278,11 +313,15 @@ export default {
           } else {
             this.showCountdown = false
             clearInterval(timer)
-            this.countdown = 3
             resolve()
           }
         }, 1000)
       })
+        .then(() => {
+          setTimeout(() => {
+            this.countdown = 3
+          }, 500)
+        })
     },
     reStart () {
       location.reload()
@@ -291,9 +330,11 @@ export default {
   watch: {
     // 分数增加，速度加快
     scoreCount (val, oldval) {
-      // 每长10分就增加一次速度
-      if (val > oldval && val % 6 === 0 && this.speed > 100) {
-        this.speed -= 100
+      // 每长5分就增加一次速度
+      if (val > oldval && val % 5 === 0 && this.speed > 50) {
+        this.speed -= 50
+        clearInterval(this.moveTimer)
+        this.moveTimer = setInterval(this.snakeMove, this.speed)
       }
     }
   },
@@ -422,22 +463,26 @@ export default {
   height: 20px;
   width: 20px;
   float: left;
+  padding: 1px;
   transition: all .3s;
 }
 .snake-part {
-  height: 100%;
-  width: 100%;
+  height: 18px;
+  width: 18px;
   background-size: 100% 100%;
   border-radius: 50%;
 }
 .snake-part.header {
-  background-image: url('../assets/images/st.png')
+  background-image: url('../assets/images/st.png');
+  box-shadow: 0px 0px 1px 1px #999;
 }
 .snake-part.body {
-  background-image: url('../assets/images/sb2.png')
+  background-image: url('../assets/images/sb2.png');
+  box-shadow: 0px 0px 1px 1px #999;
 }
 .snake-part.footer {
-  background-image: url('../assets/images/sf.png')
+  background-image: url('../assets/images/sf.png');
+  box-shadow: 0px 0px 1px 1px #999;
 }
 .snake-part.header.rotate90 {
   transform: rotate(90deg);
@@ -469,5 +514,11 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+.f14 {
+  font-size: 14px !important;
+}
+.test-right {
+  text-align: right !important;
 }
 </style>
